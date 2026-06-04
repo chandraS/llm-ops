@@ -14,6 +14,8 @@ LKE cluster (3× RTX 4000 GPU nodes)
 
 ## Prerequisites
 
+### Mac
+
 | Tool | Version | Install |
 |------|---------|---------|
 | Terraform | >= 1.6 | `brew install terraform` |
@@ -24,7 +26,102 @@ Accounts needed:
 - [Akamai Cloud](https://cloud.linode.com) account with a Personal Access Token
 - [HuggingFace](https://huggingface.co) account with a token that has read access to `Qwen/Qwen2.5-7B-Instruct`
 
+### Ubuntu / Debian
+
+**Terraform:**
+```bash
+sudo apt-get update && sudo apt-get install -y gnupg software-properties-common
+
+wget -O- https://apt.releases.hashicorp.com/gpg | \
+  gpg --dearmor | \
+  sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg > /dev/null
+
+echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] \
+  https://apt.releases.hashicorp.com $(lsb_release -cs) main" | \
+  sudo tee /etc/apt/sources.list.d/hashicorp.list
+
+sudo apt update && sudo apt install terraform -y
+terraform -version
+```
+
+**kubectl:**
+```bash
+curl -LO "https://dl.k8s.io/release/$(curl -sL https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+kubectl version --client
+```
+
+**AWS CLI:**
+```bash
+sudo apt install awscli -y
+```
+
+**Python 3:**
+```bash
+sudo apt install python3 python3-pip -y
+pip3 install aiohttp
+```
+
 ---
+
+### Windows
+
+All commands below run in **PowerShell** (run as Administrator where noted).
+
+**Terraform:**
+
+Option 1 — Winget (Windows 10/11, recommended):
+```powershell
+winget install HashiCorp.Terraform
+```
+
+Option 2 — Chocolatey:
+```powershell
+# Install Chocolatey first if not already installed (run as Administrator)
+Set-ExecutionPolicy Bypass -Scope Process -Force
+[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+
+choco install terraform -y
+```
+
+Option 3 — Manual:
+1. Download the Windows zip from https://developer.hashicorp.com/terraform/downloads
+2. Extract `terraform.exe` to `C:\terraform`
+3. Add `C:\terraform` to your `PATH` via **System → Advanced → Environment Variables**
+
+Verify:
+```powershell
+terraform -version
+```
+
+---
+
+**kubectl:**
+
+```powershell
+winget install Kubernetes.kubectl
+```
+
+Or via Chocolatey:
+```powershell
+choco install kubernetes-cli -y
+```
+
+Verify:
+```powershell
+kubectl version --client
+```
+
+### Windows notes
+
+- Use **PowerShell** or **Windows Terminal** — the load test script and port-forward script are bash-based and require WSL2 or Git Bash on Windows
+- **WSL2 is recommended** for running `bash scripts/port-forward.sh` and `python scripts/demo_load_test.py` — install it with `wsl --install` then follow the Ubuntu instructions inside WSL
+- `kubectl port-forward` works natively in PowerShell — you can run port-forwards from PowerShell and use the Prometheus/Grafana URLs in your browser normally
+- `kubeconfig.yaml` written by Terraform works with both native Windows kubectl and WSL2 kubectl — copy it to `~/.kube/config` inside WSL2 if using WSL for kubectl commands
+
+---
+
 
 ## Setup
 

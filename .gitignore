@@ -1,0 +1,17 @@
+# Terraform state — never commit
+*.tfstate
+*.tfstate.backup
+.terraform/
+.terraform.lock.hcl
+
+# Sensitive variable files — never commit
+*.tfvars
+*.tfvars.json
+
+# Generated kubeconfig — never commit
+kubeconfig.yaml
+*.pem
+*.key
+
+# Exception — commit the example tfvars
+!environments/poc/terraform.tfvars.example

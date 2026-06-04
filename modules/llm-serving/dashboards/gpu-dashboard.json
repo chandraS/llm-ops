@@ -1,0 +1,255 @@
+{
+    "title": "GPU Metrics - RTX 4000 Ada (LKE)",
+    "uid": "gpu-rtx4000",
+    "timezone": "browser",
+    "refresh": "10s",
+    "time": { "from": "now-30m", "to": "now" },
+    "panels": [
+      {
+        "id": 1,
+        "title": " SM Utilisation % (per GPU)",
+        "type": "timeseries",
+        "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 },
+        "targets": [
+          {
+            "expr": "DCGM_FI_DEV_GPU_UTIL",
+            "legendFormat": "{{ Hostname }} / {{ device }}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "min": 0, "max": 100,
+            "custom": { "lineWidth": 2 },
+            "thresholds": {
+              "steps": [
+                { "color": "green", "value": 0 },
+                { "color": "yellow", "value": 70 },
+                { "color": "red", "value": 90 }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 2,
+        "title": " Memory Copy Utilisation % (per GPU)",
+        "type": "timeseries",
+        "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 },
+        "targets": [
+          {
+            "expr": "DCGM_FI_DEV_MEM_COPY_UTIL",
+            "legendFormat": "{{ Hostname }} / {{ device }}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "min": 0, "max": 100,
+            "custom": { "lineWidth": 2 }
+          }
+        }
+      },
+      {
+        "id": 3,
+        "title": " Encoder Utilisation %",
+        "type": "timeseries",
+        "gridPos": { "x": 0, "y": 8, "w": 12, "h": 7 },
+        "targets": [
+          {
+            "expr": "DCGM_FI_DEV_ENC_UTIL",
+            "legendFormat": "{{ Hostname }} / {{ device }}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "min": 0, "max": 100,
+            "custom": { "lineWidth": 2 }
+          }
+        }
+      },
+      {
+        "id": 4,
+        "title": " Decoder Utilisation %",
+        "type": "timeseries",
+        "gridPos": { "x": 12, "y": 8, "w": 12, "h": 7 },
+        "targets": [
+          {
+            "expr": "DCGM_FI_DEV_DEC_UTIL",
+            "legendFormat": "{{ Hostname }} / {{ device }}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "min": 0, "max": 100,
+            "custom": { "lineWidth": 2 }
+          }
+        }
+      },
+      {
+        "id": 5,
+        "title": " GPU Temperature (°C)",
+        "type": "timeseries",
+        "gridPos": { "x": 0, "y": 15, "w": 12, "h": 8 },
+        "targets": [
+          {
+            "expr": "DCGM_FI_DEV_GPU_TEMP",
+            "legendFormat": "{{ Hostname }} / {{ device }}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "celsius",
+            "custom": { "lineWidth": 2 },
+            "thresholds": {
+              "steps": [
+                { "color": "green", "value": 0 },
+                { "color": "yellow", "value": 75 },
+                { "color": "red", "value": 85 }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 6,
+        "title": " Power Draw vs Cap (W)",
+        "type": "timeseries",
+        "gridPos": { "x": 12, "y": 15, "w": 12, "h": 8 },
+        "targets": [
+          {
+            "expr": "DCGM_FI_DEV_POWER_USAGE",
+            "legendFormat": "draw — {{ Hostname }} / {{ device }}"
+          },
+          {
+            "expr": "DCGM_FI_DEV_POWER_MGMT_LIMIT",
+            "legendFormat": "cap — {{ Hostname }} / {{ device }}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "watt",
+            "custom": { "lineWidth": 2 }
+          }
+        }
+      },
+      {
+        "id": 7,
+        "title": " Cumulative Energy Consumption (kWh)",
+        "type": "timeseries",
+        "gridPos": { "x": 0, "y": 23, "w": 12, "h": 7 },
+        "targets": [
+          {
+            "expr": "DCGM_FI_DEV_TOTAL_ENERGY_CONSUMPTION / 1e9 / 3600",
+            "legendFormat": "{{ Hostname }} / {{ device }}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "kwatth",
+            "custom": { "lineWidth": 2 }
+          }
+        }
+      },
+      {
+        "id": 8,
+        "title": " SM Clock Speed (MHz)",
+        "type": "timeseries",
+        "gridPos": { "x": 12, "y": 23, "w": 12, "h": 7 },
+        "targets": [
+          {
+            "expr": "DCGM_FI_DEV_SM_CLOCK",
+            "legendFormat": "{{ Hostname }} / {{ device }}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "MHz",
+            "custom": { "lineWidth": 2 },
+            "thresholds": {
+              "steps": [
+                { "color": "red", "value": 0 },
+                { "color": "yellow", "value": 1500 },
+                { "color": "green", "value": 2000 }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 9,
+        "title": " PCIe Throughput (MB/s)",
+        "type": "timeseries",
+        "gridPos": { "x": 0, "y": 30, "w": 12, "h": 7 },
+        "targets": [
+          {
+            "expr": "DCGM_FI_DEV_PCIE_TX_THROUGHPUT",
+            "legendFormat": "TX — {{ Hostname }} / {{ device }}"
+          },
+          {
+            "expr": "DCGM_FI_DEV_PCIE_RX_THROUGHPUT",
+            "legendFormat": "RX — {{ Hostname }} / {{ device }}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "MBs",
+            "custom": { "lineWidth": 2 }
+          }
+        }
+      },
+      {
+        "id": 10,
+        "title": " Single-Bit ECC Errors (correctable)",
+        "type": "timeseries",
+        "gridPos": { "x": 12, "y": 30, "w": 12, "h": 7 },
+        "targets": [
+          {
+            "expr": "DCGM_FI_DEV_ECC_SBE_VOL_TOTAL",
+            "legendFormat": "{{ Hostname }} / {{ device }}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": { "lineWidth": 2 },
+            "thresholds": {
+              "steps": [
+                { "color": "green", "value": 0 },
+                { "color": "yellow", "value": 1 }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 11,
+        "title": " SM Util vs KV Cache % (Correlation)",
+        "type": "timeseries",
+        "gridPos": { "x": 0, "y": 37, "w": 24, "h": 8 },
+        "targets": [
+          {
+            "expr": "DCGM_FI_DEV_GPU_UTIL",
+            "legendFormat": "SM Util % — {{ Hostname }}"
+          },
+          {
+            "expr": "sum(vllm:kv_cache_usage_perc{model_name=\"qwen25-7b\"}) * 100",
+            "legendFormat": "KV Cache % (vLLM)"
+          },
+          {
+            "expr": "sum(vllm:num_requests_running{model_name=\"qwen25-7b\"})",
+            "legendFormat": "Requests Running"
+          },
+          {
+            "expr": "kube_deployment_status_replicas_ready{deployment=\"qwen25-7b\", namespace=\"llm-serving\"}",
+            "legendFormat": "Ready Replicas"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": { "custom": { "lineWidth": 2 } }
+        }
+      }
+    ]
+  }
+  

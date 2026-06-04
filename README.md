@@ -144,6 +144,12 @@ export KUBECONFIG=$(pwd)/kubeconfig.yaml
 
 # Verify nodes are ready
 kubectl get nodes -o wide
+
+# Verify vLLM pod is running
+kubectl get pods -n llm-serving
+
+# Verify KEDA ScaledObject is ready
+kubectl get scaledobject -n llm-serving
 ```
 
 ### Port-forward all services

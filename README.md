@@ -181,7 +181,7 @@ curl http://localhost:8000/v1/chat/completions \
 
 ```bash
 pip3 install aiohttp
-python scripts/demo_load_test.py --mode combined --duration 180 --concurrency 10
+python3 scripts/demo_load_test.py --mode combined --duration 180 --concurrency 10
 ```
 
 ## Tear down

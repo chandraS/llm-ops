@@ -1,6 +1,6 @@
 # LLM Observability
 
-Provisions a Kubernetes cluster on Akamai Cloud (LKE) with vLLM, kube-prometheus-stack, KEDA, NVIDIA GPU operator, and a full set of Prometheus alerts and Grafana dashboards — all from a single `terraform apply`.
+Provisions LKE cluster on Akamai Cloud with vLLM, kube-prometheus-stack, KEDA, NVIDIA GPU operator, and a full set of Prometheus alerts and Grafana dashboards 
 
 ## Architecture
 

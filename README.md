@@ -1,6 +1,14 @@
 # LLM Observability
 
-Provisions LKE cluster on Akamai Cloud with vLLM, kube-prometheus-stack, KEDA, NVIDIA GPU operator, and a full set of Prometheus alerts and Grafana dashboards 
+Provisions LKE cluster on Akamai Cloud with vLLM, kube-prometheus-stack, KEDA, NVIDIA GPU operator, and a full set of Prometheus alerts and Grafana dashboards.
+
+**Live demo:** [chat.akamai-poc.online](https://chat.akamai-poc.online) — chat UI running on the deployed stack. Request load test access from the sidebar.
+
+## Screenshots
+
+| Chat Console | Grafana Dashboard |
+|---|---|
+| ![Chat Console](docs/screenshot-console.png) | ![Grafana Dashboard](docs/screenshot-grafana.png) |
 
 ## Architecture
 

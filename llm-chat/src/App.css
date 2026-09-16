@@ -749,6 +749,16 @@ textarea::placeholder { color: var(--ak-text-dim); }
   animation: pulse 1.4s ease-in-out infinite;
 }
 
+.lt-status-pill.stopping {
+  border-color: rgba(255, 160, 0, 0.4);
+  color: var(--ak-warning);
+}
+
+.lt-status-pill.stopping .lt-status-dot {
+  background: var(--ak-warning);
+  animation: pulse 0.7s ease-in-out infinite;
+}
+
 .lt-mode-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

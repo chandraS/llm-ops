@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import './App.css';
 import LoadTestPanel from './LoadTestPanel';
+import AccessRequestForm from './AccessRequestForm';
 const API_URL     = import.meta.env.VITE_API_URL || 'https://llm-ops.akamai-poc.online';
 const MODEL       = import.meta.env.VITE_MODEL   || 'qwen25-7b';
 const PROM_URL    = (import.meta.env.VITE_API_URL || 'https://llm-ops.akamai-poc.online') + '/prometheus';
@@ -156,6 +157,7 @@ export default function App() {
   const [streamPct, setStreamPct]   = useState(0);
   const [showConfig, setShowConfig] = useState(false);
   const [showLoadTest, setShowLoadTest] = useState(false);
+  const [showAccessRequest, setShowAccessRequest] = useState(false);
   const [metrics, setMetrics]       = useState({ kv: 0, replicas: 0, queue: 0, gpu: 0, loading: true });
 
   const [config, setConfig] = useState({
@@ -408,10 +410,17 @@ export default function App() {
             <div className="sidebar-label">Tools</div>
             <div
               className={`sidebar-item ${showLoadTest ? 'active' : ''}`}
-              onClick={() => { setShowLoadTest(v => !v); setShowConfig(false); }}
+              onClick={() => { setShowLoadTest(v => !v); setShowConfig(false); setShowAccessRequest(false); }}
             >
               <i className="ti ti-bolt" aria-hidden="true" />
               Load test
+            </div>
+            <div
+              className={`sidebar-item ${showAccessRequest ? 'active' : ''}`}
+              onClick={() => { setShowAccessRequest(v => !v); setShowLoadTest(false); setShowConfig(false); }}
+            >
+              <i className="ti ti-key" aria-hidden="true" />
+              Request access
             </div>
             <a
               href={`${GRAFANA_URL}/d/vllm-qwen25-7b`}
@@ -570,6 +579,9 @@ export default function App() {
       )}
       {showLoadTest && (
         <LoadTestPanel onClose={() => setShowLoadTest(false)} />
+      )}
+      {showAccessRequest && (
+        <AccessRequestForm onClose={() => setShowAccessRequest(false)} />
       )}
     </div>
   );

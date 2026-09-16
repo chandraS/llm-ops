@@ -26,6 +26,12 @@ spec:
         - path:
             type: PathPrefix
             value: /api/loadtest
+        - path:
+            type: PathPrefix
+            value: /api/access-request
+        - path:
+            type: PathPrefix
+            value: /api/access-requests
       backendRefs:
         - name: loadtest-api
           namespace: llm-serving

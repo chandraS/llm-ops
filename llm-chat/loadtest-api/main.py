@@ -9,17 +9,21 @@ Mirrors the three modes in scripts/demo_load_test.py (queue / kv / combined).
 import asyncio
 import os
 import time
+from datetime import datetime, timezone
 from typing import Optional
 
 import aiohttp
 from fastapi import FastAPI, Header, HTTPException
-from pydantic import BaseModel, Field
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel, EmailStr, Field
 
 VLLM_URL = os.environ.get(
     "VLLM_URL", "http://qwen25-7b.llm-serving.svc.cluster.local:8000/v1/chat/completions"
 )
 MODEL_NAME = os.environ.get("MODEL_NAME", "qwen25-7b")
 LOADTEST_TOKEN = os.environ.get("LOADTEST_TOKEN", "")
+GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "")
+GITHUB_REPO = os.environ.get("GITHUB_REPO", "chandraS/llm-ops")
 
 MODE_INTERVAL = {"queue": 0.05, "kv": 0.3, "combined": 0.2}
 
@@ -74,6 +78,16 @@ COMBINED_PROMPTS = LONG_PROMPTS * 7 + SHORT_PROMPTS * 3
 
 app = FastAPI()
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://chat.akamai-poc.online"],
+    allow_methods=["GET", "POST"],
+    allow_headers=["*"],
+)
+
+# In-memory log of access requests (GitHub Issues are the persistent record)
+access_requests: list[dict] = []
+
 state = {
     "status": "idle",  # idle | running
     "mode": None,
@@ -93,6 +107,11 @@ class StartRequest(BaseModel):
     mode: str = Field(pattern="^(queue|kv|combined)$")
     concurrency: int = Field(ge=1, le=180)
     duration: int = Field(ge=30, le=600)
+
+
+class AccessRequest(BaseModel):
+    email: EmailStr
+    description: str = Field(min_length=10, max_length=1000)
 
 
 def _require_token(token: Optional[str]) -> None:
@@ -164,9 +183,54 @@ async def _run_load_test(mode: str, concurrency: int, duration: int, stop_event)
             await asyncio.sleep(interval)
 
         if tasks:
+            if stop_event.is_set():
+                for t in tasks:
+                    t.cancel()
             await asyncio.gather(*tasks, return_exceptions=True)
 
     state["status"] = "idle"
+
+
+@app.post("/api/access-request")
+async def request_access(req: AccessRequest):
+    if not GITHUB_TOKEN:
+        raise HTTPException(500, "Server misconfigured: GITHUB_TOKEN not set")
+
+    submitted_at = datetime.now(timezone.utc).isoformat()
+    issue_body = (
+        f"**Email:** {req.email}\n\n"
+        f"**How they found the repo:**\n{req.description}\n\n"
+        f"---\n_Submitted at {submitted_at}_"
+    )
+
+    async with aiohttp.ClientSession() as session:
+        resp = await session.post(
+            f"https://api.github.com/repos/{GITHUB_REPO}/issues",
+            json={"title": f"Access request: {req.email}", "body": issue_body},
+            headers={
+                "Authorization": f"Bearer {GITHUB_TOKEN}",
+                "Accept": "application/vnd.github+json",
+                "X-GitHub-Api-Version": "2022-11-28",
+            },
+            timeout=aiohttp.ClientTimeout(total=10),
+        )
+        if resp.status not in (200, 201):
+            raise HTTPException(502, "Failed to create GitHub issue")
+        issue = await resp.json()
+
+    access_requests.append({
+        "email": req.email,
+        "submitted_at": submitted_at,
+        "issue_url": issue.get("html_url"),
+    })
+
+    return {"ok": True, "message": f"Request submitted. We'll reach out to {req.email}."}
+
+
+@app.get("/api/access-requests")
+async def list_access_requests(x_load_test_token: Optional[str] = Header(None)):
+    _require_token(x_load_test_token)
+    return {"requests": access_requests}
 
 
 @app.get("/api/loadtest/health")

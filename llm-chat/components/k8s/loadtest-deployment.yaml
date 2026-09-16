@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: loadtest-api
-          image: shicha/loadtest-api:v1
+          image: shicha/loadtest-api:v3
           ports:
             - name: http
               containerPort: 8080
@@ -31,6 +31,13 @@ spec:
                 secretKeyRef:
                   name: loadtest-token
                   key: token
+            - name: GITHUB_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: github-access-token
+                  key: token
+            - name: GITHUB_REPO
+              value: "chandraS/llm-ops"
           resources:
             requests:
               cpu: 100m

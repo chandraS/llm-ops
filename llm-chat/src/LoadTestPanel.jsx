@@ -22,6 +22,7 @@ export default function LoadTestPanel({ onClose }) {
   const duration = DURATION_MARKS[durationIdx];
 
   const [status, setStatus] = useState({ status: 'idle' });
+  const [stopping, setStopping] = useState(false);
   const [error, setError] = useState('');
   const [needsToken, setNeedsToken] = useState(!localStorage.getItem(TOKEN_KEY));
   const [tokenInput, setTokenInput] = useState('');
@@ -33,6 +34,7 @@ export default function LoadTestPanel({ onClose }) {
       if (!res.ok) return;
       const data = await res.json();
       setStatus(data);
+      if (data.status === 'idle') setStopping(false);
     } catch {
       // transient — next poll will retry
     }
@@ -98,6 +100,7 @@ export default function LoadTestPanel({ onClose }) {
 
   const handleStop = async () => {
     setError('');
+    setStopping(true);
     try {
       const res = await fetch(`${LOADTEST_BASE}/stop`, {
         method: 'POST',
@@ -106,15 +109,17 @@ export default function LoadTestPanel({ onClose }) {
       if (res.status === 401) {
         localStorage.removeItem(TOKEN_KEY);
         setNeedsToken(true);
+        setStopping(false);
         return;
       }
       fetchStatus();
     } catch {
       setError('Could not reach the load test service.');
+      setStopping(false);
     }
   };
 
-  const running = status.status === 'running';
+  const running = status.status === 'running' || stopping;
 
   return (
     <div className="config-overlay loadtest-overlay">
@@ -123,9 +128,9 @@ export default function LoadTestPanel({ onClose }) {
         <i className="ti ti-x config-close" onClick={onClose} aria-label="Close load test panel" />
       </div>
 
-      <div className={`lt-status-pill ${running ? 'running' : 'idle'}`}>
+      <div className={`lt-status-pill ${stopping ? 'stopping' : running ? 'running' : 'idle'}`}>
         <span className="lt-status-dot" />
-        {running ? 'running' : 'idle'}
+        {stopping ? 'stopping…' : running ? 'running' : 'idle'}
       </div>
 
       <div className="config-group">
@@ -209,8 +214,9 @@ export default function LoadTestPanel({ onClose }) {
       )}
 
       {running ? (
-        <button className="lt-start-btn lt-stop" onClick={handleStop}>
-          <i className="ti ti-player-stop-filled" aria-hidden="true" /> Stop load test
+        <button className="lt-start-btn lt-stop" onClick={handleStop} disabled={stopping}>
+          <i className={`ti ${stopping ? 'ti-loader-2' : 'ti-player-stop-filled'}`} aria-hidden="true" />
+          {stopping ? 'Stopping…' : 'Stop load test'}
         </button>
       ) : (
         !needsToken || !showPasscodeForm ? (

@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: chat-ui
-          image: shicha/llm-chat-ui:v5
+          image: shicha/llm-chat-ui:v8
           ports:
             - name: http
               containerPort: 80

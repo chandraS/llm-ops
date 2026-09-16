@@ -4,7 +4,7 @@ Provisions LKE cluster on Akamai Cloud with vLLM, kube-prometheus-stack, KEDA, N
 
 **Live demo:** [chat.akamai-poc.online](https://chat.akamai-poc.online) — chat UI running on the deployed stack. Request load test access from the sidebar.
 
-## Screenshots
+
 
 | Chat Console | Grafana Dashboard |
 |---|---|

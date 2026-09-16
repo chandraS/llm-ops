@@ -5,8 +5,10 @@ RUN npm install
 COPY . .
 ARG VITE_API_URL=https://llm-ops.akamai-poc.online
 ARG VITE_MODEL=qwen25-7b
+ARG VITE_GRAFANA_URL=https://grafana-llm.akamai-poc.online
 ENV VITE_API_URL=$VITE_API_URL
 ENV VITE_MODEL=$VITE_MODEL
+ENV VITE_GRAFANA_URL=$VITE_GRAFANA_URL
 RUN npm run build
 
 FROM nginx:stable-alpine

@@ -281,6 +281,39 @@ pip3 install aiohttp
 python3 scripts/demo_load_test.py --mode combined --duration 180 --concurrency 10
 ```
 
+### From the console instead
+
+The chat console (`llm-chat/`, deployed at `chat.akamai-poc.online`) has a "Load test" panel that runs
+the same three modes (`queue` / `kv` / `combined`) without needing a terminal — set mode, concurrency,
+and duration with sliders and hit **Start load test**. It's backed by `llm-chat/loadtest-api`, a small
+FastAPI service deployed in-cluster that runs the load generator as a background task so it keeps going
+even if the browser tab closes, and reports live status back to the panel.
+
+To deploy it:
+
+```bash
+# 1. Build and push the image (repeat whenever loadtest-api/ changes)
+cd llm-chat/loadtest-api
+docker build -t <your-registry>/loadtest-api:v1 .
+docker push <your-registry>/loadtest-api:v1
+# update the image field in llm-chat/components/k8s/loadtest-deployment.yaml to match
+
+# 2. Create the operator passcode secret (never commit the real value)
+kubectl create secret generic loadtest-token \
+  -n llm-serving \
+  --from-literal=token="$(openssl rand -hex 24)"
+
+# 3. Apply the manifests
+kubectl apply -f llm-chat/components/k8s/loadtest-deployment.yaml
+kubectl apply -f llm-chat/components/k8s/httproute.yaml   # adds the /api/loadtest route
+```
+
+The endpoint is only reachable at `chat.akamai-poc.online/api/loadtest/*` (same-origin with the console,
+so no CORS setup needed) and `/start` / `/stop` require an `X-Load-Test-Token` header matching the
+secret above. The console asks for that passcode the first time someone clicks **Start load test** and
+remembers it in the browser's local storage after that — give the passcode to whoever should be able to
+run load tests, not to the general public, since it costs real GPU time on shared demo infrastructure.
+
 ## Tear down
 
 ```bash
@@ -305,8 +338,12 @@ This destroys the LKE cluster and all Kubernetes resources. The Object Storage b
 │   └── llm-serving/             vLLM, ServiceMonitor, ScaledObject, alert rules
 ├── environments/
 │   └── poc/terraform.tfvars     PoC values — no secrets
-└── scripts/
-    └── port-forward.sh          starts vLLM, Prometheus, Grafana port-forwards
+├── scripts/
+│   └── port-forward.sh          starts vLLM, Prometheus, Grafana port-forwards
+└── llm-chat/                    chat console (chat.akamai-poc.online), deployed manually via kubectl
+    ├── src/                     React frontend (chat UI + load test panel)
+    ├── loadtest-api/            FastAPI service backing the load test panel
+    └── components/k8s/          Deployment/Service/HTTPRoute/Certificate manifests
 ```
 
 ---

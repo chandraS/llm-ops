@@ -716,4 +716,114 @@ textarea::placeholder { color: var(--ak-text-dim); }
   line-height: 1.6;
 }
 
+/* ── Load test panel ── */
+.loadtest-overlay { width: 340px; }
+
+.lt-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-family: var(--mono);
+  border: 1px solid var(--ak-blue-bdr);
+  color: var(--ak-text-muted);
+  margin-bottom: 18px;
+}
+
+.lt-status-pill .lt-status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ak-text-dim);
+}
+
+.lt-status-pill.running {
+  border-color: var(--ak-accent-glow);
+  color: var(--ak-accent);
+}
+
+.lt-status-pill.running .lt-status-dot {
+  background: var(--ak-accent);
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+.lt-mode-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.lt-mode-btn {
+  padding: 8px 6px;
+  background: var(--ak-navy);
+  border: 1px solid var(--ak-blue-bdr);
+  border-radius: var(--radius-sm);
+  color: var(--ak-text-muted);
+  font-family: var(--font);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.lt-mode-btn:hover:not(:disabled) { border-color: var(--ak-accent); color: var(--ak-text); }
+
+.lt-mode-btn.active {
+  background: var(--ak-accent-dim);
+  border-color: var(--ak-accent);
+  color: var(--ak-accent);
+  font-weight: 500;
+}
+
+.lt-mode-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.lt-hint {
+  font-size: 12px;
+  color: var(--ak-text-dim);
+  line-height: 1.5;
+}
+
+.lt-tick-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  font-family: var(--mono);
+  color: var(--ak-text-dim);
+  margin-top: 4px;
+}
+
+.lt-tick-row .active { color: var(--ak-accent); font-weight: 500; }
+
+.lt-start-btn {
+  width: 100%;
+  padding: 11px;
+  background: var(--ak-accent);
+  border: none;
+  border-radius: var(--radius-md);
+  color: #fff;
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.lt-start-btn:hover { opacity: 0.9; }
+
+.lt-start-btn.lt-stop {
+  background: var(--ak-error);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.lt-live-stats {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--ak-blue-bdr);
+}
+
 .config-info strong { color: var(--ak-accent); font-weight: 500; }

@@ -15,3 +15,11 @@ kubeconfig.yaml
 
 # Exception — commit the example tfvars
 !environments/poc/terraform.tfvars.example
+
+# Node / frontend build artifacts
+node_modules/
+dist/
+
+# Python
+__pycache__/
+*.pyc

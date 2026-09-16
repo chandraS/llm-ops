@@ -1,8 +1,10 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import './App.css';
-const API_URL  = import.meta.env.VITE_API_URL || 'https://llm-ops.akamai-poc.online';
-const MODEL    = import.meta.env.VITE_MODEL   || 'qwen25-7b';
-const PROM_URL = (import.meta.env.VITE_API_URL || 'https://llm-ops.akamai-poc.online') + '/prometheus';
+import LoadTestPanel from './LoadTestPanel';
+const API_URL     = import.meta.env.VITE_API_URL || 'https://llm-ops.akamai-poc.online';
+const MODEL       = import.meta.env.VITE_MODEL   || 'qwen25-7b';
+const PROM_URL    = (import.meta.env.VITE_API_URL || 'https://llm-ops.akamai-poc.online') + '/prometheus';
+const GRAFANA_URL = import.meta.env.VITE_GRAFANA_URL || 'https://grafana-llm.akamai-poc.online';
 
 const SUGGESTIONS = [
   'How does KV cache autoscaling work?',
@@ -153,6 +155,7 @@ export default function App() {
   const [loading, setLoading]       = useState(false);
   const [streamPct, setStreamPct]   = useState(0);
   const [showConfig, setShowConfig] = useState(false);
+  const [showLoadTest, setShowLoadTest] = useState(false);
   const [metrics, setMetrics]       = useState({ kv: 0, replicas: 0, queue: 0, gpu: 0, loading: true });
 
   const [config, setConfig] = useState({
@@ -368,7 +371,20 @@ export default function App() {
             <div className="status-dot" />
             {config.model} · lke-us-sea
           </div>
-          <button className="icon-btn" onClick={() => setShowConfig(v => !v)} title="Settings" aria-label="Open settings">
+          <button
+            className="icon-btn"
+            onClick={() => { setShowLoadTest(v => !v); setShowConfig(false); }}
+            title="Load test"
+            aria-label="Open load test panel"
+          >
+            <i className="ti ti-bolt" aria-hidden="true" />
+          </button>
+          <button
+            className="icon-btn"
+            onClick={() => { setShowConfig(v => !v); setShowLoadTest(false); }}
+            title="Settings"
+            aria-label="Open settings"
+          >
             <i className="ti ti-settings" aria-hidden="true" />
           </button>
         </div>
@@ -390,8 +406,15 @@ export default function App() {
 
           <div className="sidebar-section">
             <div className="sidebar-label">Tools</div>
+            <div
+              className={`sidebar-item ${showLoadTest ? 'active' : ''}`}
+              onClick={() => { setShowLoadTest(v => !v); setShowConfig(false); }}
+            >
+              <i className="ti ti-bolt" aria-hidden="true" />
+              Load test
+            </div>
             <a
-              href="https://grafana-llm.akamai-poc.online"
+              href={`${GRAFANA_URL}/d/vllm-qwen25-7b`}
               target="_blank"
               rel="noopener noreferrer"
               className="sidebar-item"
@@ -544,6 +567,9 @@ export default function App() {
 
       {showConfig && (
         <ConfigPanel config={config} onChange={updateConfig} onClose={() => setShowConfig(false)} />
+      )}
+      {showLoadTest && (
+        <LoadTestPanel onClose={() => setShowLoadTest(false)} />
       )}
     </div>
   );

@@ -25,6 +25,14 @@ spec:
     - matches:
         - path:
             type: PathPrefix
+            value: /api/loadtest
+      backendRefs:
+        - name: loadtest-api
+          namespace: llm-serving
+          port: 8080
+    - matches:
+        - path:
+            type: PathPrefix
             value: /
       backendRefs:
         - name: llm-chat-ui

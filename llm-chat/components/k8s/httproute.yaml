@@ -1,0 +1,32 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: chat-route
+  namespace: nginx-gateway
+spec:
+  parentRefs:
+    - name: akamai-poc-gateway
+      namespace: nginx-gateway
+      sectionName: https-chat
+    - name: akamai-poc-gateway
+      namespace: nginx-gateway
+      sectionName: http
+  hostnames:
+    - chat.akamai-poc.online
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /.well-known/acme-challenge
+      backendRefs:
+        - name: acme-solver-proxy
+          namespace: nginx-gateway
+          port: 8089
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: llm-chat-ui
+          namespace: llm-serving
+          port: 80

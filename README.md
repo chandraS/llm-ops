@@ -1,4 +1,4 @@
-# LLM Observability
+# LLM Auto-scaling with Observability
 
 Provisions LKE cluster on Akamai Cloud with vLLM, kube-prometheus-stack, KEDA, NVIDIA GPU operator, and a full set of Prometheus alerts and Grafana dashboards.
 
